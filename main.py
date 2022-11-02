@@ -1,9 +1,5 @@
 # 导入Flask类
-from gevent import monkey
-monkey.patch_all()
-from flask import Flask, request
-from gevent import pywsgi
-from geventwebsocket.handler import WebSocketHandler
+from fastapi import FastAPI,Form
 import json
 import base64
 # from paddleocr import PaddleOCR
@@ -26,12 +22,14 @@ import html
 import httpx
 import asyncio
 import aiohttp
+import uvicorn
+import shutil
 from PIL import Image, ImageDraw, ImageFont
 from interval import Interval
 from paddleocr import PaddleOCR, draw_ocr,logging
 
 # 使用当前模块的名称构建Flask app
-app = Flask(__name__)
+app = FastAPI()
 
 
 kongge = ['wws', 'me', 'ship', 'recent', '绑定', '国服', '亚服', '俄服', '美服','cn','asia','na','eu']
@@ -107,7 +105,6 @@ def Text_Chuli(string):
                     list[i] = list[2]
                     list[2] = a
 
-    print(list)
     #排序
     intjishu = 0
     shanchu =0
@@ -131,7 +128,11 @@ def Text_Chuli(string):
         list[3] = fuzzy_matching(name_list,list[3])
         for i in range(len(list)-1,3,-1):
             list.pop(i)
-    #修复 ship参数
+    elif list[2] == 'recent' and len(list) >= 3:
+        for i in range(len(list)-1,3,-1):
+            list.pop(i)
+    
+    print(list)
     string = ' '.join(list)
     return string
 # 获取分类列表
@@ -139,12 +140,12 @@ async def get_image_bytes(url):
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         return response.content
-@app.route('/OCR/', methods=["GET","POST"])
-def get_item_list():
+@app.post('/OCR/')
+def get_item_list(url:str = Form()):
     start = time.time()
     file_name = '/home/youth/Desktop/OCRServer/image' + str(random.randint(0, 1000)) + '.jpg'
     try:
-        image_url = request.form['url']  # 获取图像数据,对应客户端的img_str
+        image_url = url  # 获取图像数据,对应客户端的img_str
         #print(image_url)
         data = httpx.get(image_url).content
         # data = asyncio.run(get_image_bytes(image_url))
@@ -193,9 +194,9 @@ def get_item_list():
             cv2.imwrite(file_name, dst)
             # print()
         # print('缩放耗时:',time.time()-suofangtime)
-        result = ocr.ocr(file_name, cls=True)
-        os.remove(file_name)
-        if len(result) > 0 and len(result) < 12:
+        result = ocr.ocr(file_name, rec=False)
+        if len(result) < 12 and len(result) > 0:
+            result = ocr.ocr(file_name, cls=True)
             # texttime = time.time()
             string = align_text(result)
             if len(string) > 50 or len(string) < 5:
@@ -206,6 +207,8 @@ def get_item_list():
         else:
             string = '未匹配'
         print("OCR总耗时：", time.time() - start,dst.shape[1], '*', dst.shape[0],string,time.strftime('%Y-%m-%d-%Hh-%Mm-%Ss',time.localtime(time.time())))
+        if 'wws ' in string:
+            shutil.move(file_name,'./save/image'+str(len(os.listdir('./save/'))+1)+'.jpg')
         return string
     except Exception as e:
         traceback.print_exc()
@@ -248,18 +251,16 @@ def align_text(res, threshold=0):
     txt = ' '.join([i[1] for i in line_list])
     return txt
 # 运行程序
-
+start = time.time()
+ocr = PaddleOCR(use_angle_cls=True, lang="ch", use_gpu=True,
+                rec_model_dir='./inference/ch_PP-OCRv3_rec_infer/',
+                cls_model_dir='./inference/ch_ppocr_mobile_v2.0_cls_infer/',
+                det_model_dir='./inference/ch_PP-OCRv3_det_infer/',
+                use_mp=True, total_process_num=6,show_log=False,
+                drop_score=0.4,precision='int8')
+img = './a.jpg'
+# result = ocr.ocr(img, cls=True)
+print("OCR初始化耗时：", time.time() - start)
 if __name__ == '__main__':
-    start = time.time()
-    ocr = PaddleOCR(use_angle_cls=True, lang="ch", use_gpu=True,
-                    rec_model_dir='./inference/ch_PP-OCRv3_rec_infer/',
-                    cls_model_dir='./inference/ch_ppocr_mobile_v2.0_cls_infer/',
-                    det_model_dir='./inference/ch_PP-OCRv3_det_infer/',
-                    use_mp=True, total_process_num=6,show_log=False,
-                    drop_score=0.4,precision='int8',use_tensorrt=False)  # need to run only once to download and load model into memory
-    img = './a.jpg'
-    result = ocr.ocr(img, cls=True)
-    print("OCR初始化耗时：", time.time() - start)
-    # app.run(host='192.168.1.110',port=23338,processes=True,use_reloader=False)
-    server = pywsgi.WSGIServer(('192.168.1.110', 23338), app,handler_class=WebSocketHandler)
-    server.serve_forever()
+    uvicorn.run(app, host="192.168.1.110", port=23338,access_log=False)
+
