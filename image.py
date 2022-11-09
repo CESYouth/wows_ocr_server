@@ -1,24 +1,72 @@
 import cv2
 import numpy as np
-import httpx
+import requests
+import threading
 import json
+import time
+import random
+from multiprocessing.dummy import Pool as ThreadPool
 
 config = json.load(open('./config.json', 'r', encoding='utf8'))
 img_size_max = config['img_size_max'].split(',')
 img_size_min = config['img_size_min'].split(',')
 img_aim_long = int(config['img_aim_long'])
+
+path = []
+imgdata = []
+state = True
+cancel_tmr = False
+
 for i in range(2):
     img_size_max[i] = int(img_size_max[i])
     img_size_min[i] = int(img_size_min[i])
+
+def dowm(string):
+    data = requests.get(string)
+    return data.content
+
+def timer():
+    global path
+    global imgdata
+    global state
+    paths = path
+    path = []
+	# 打印当前时间
+    if not cancel_tmr:
+        if len(paths)!=0:
+            state = False
+            start = time.time()
+            imgdata = pool.map(dowm, paths)
+            # for i in imgdata:
+            #     print(len(i))
+            # print(time.time()-start,len(imgdata))
+            state = True
+        threading.Timer(0.1, timer).start()
+    
 def img_dow(image_url,file_name):
-    data = httpx.get(image_url).content
+    global path
+    global imgdata
+    global state
+    while not state:
+        time.sleep(0.01)
+    path.append(image_url)
+    datatag = len(path)-1
+    print(datatag)
+    time.sleep(0.1)
+    while True:
+        time.sleep(0.01)
+        # print('sleep')
+        if state:
+            data = imgdata[datatag]
+            break
+    # data = requests.get(image_url).content
     datalong = len(data)/1024/1024
     if datalong > 1:
         datalongstr = str(round(datalong,4))+'MB'
     else:
         datalongstr = str(round(datalong*1024,4))+'KB'
     if tuple(data[0:4]) == (0x47,0x49,0x46,0x38):
-        print("图片类型为GIF跳过")
+        # print("图片类型为GIF跳过")
         return "图片类型为GIF跳过"
     else:
         img_np_arr = np.frombuffer(data, np.uint8)
@@ -48,4 +96,7 @@ def img_dow(image_url,file_name):
             dst = img
             cv2.imwrite(file_name, dst)
             # print()
-        return "ok"
+        return datalongstr
+        
+pool = ThreadPool(6)
+timer()
