@@ -1,31 +1,14 @@
 # 导入Flask类
 from fastapi import FastAPI,Form
-import json
-import base64
-# from paddleocr import PaddleOCR
-import os
-# os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 import image
-import cv2
-import threading
-import socket
 import traceback
 import time
 import random
-import re
 import os
-import numpy as np
-import requests
 import json
-import difflib
-import html
-import httpx
-import asyncio
-import aiohttp
 import uvicorn
 import shutil
 import text
-from PIL import Image, ImageDraw, ImageFont
 from paddleocr import PaddleOCR
 from distutils.util import strtobool
 
@@ -33,7 +16,8 @@ path = os.getcwd()
 config = json.load(open('./config.json', 'r', encoding='utf8'))
 # 使用当前模块的名称构建Flask app
 app = FastAPI()
-
+if not os.path.exists('./save'):
+    os.madir('./save')
 
 @app.post('/OCR/')
 def get_item_list(url:str = Form()):
@@ -43,7 +27,7 @@ def get_item_list(url:str = Form()):
         dowtime = time.time()
         imgdow = image.img_dow(url,file_name)
         dowtimend = time.time()
-        if imgdow != '图片类型为GIF跳过':
+        if imgdow != '图像不符合':
             ocr_guolv = time.time()
             result = ocr2.ocr(file_name, rec=False,cls=False)
             ocr_guolv_end = time.time()
@@ -60,7 +44,7 @@ def get_item_list(url:str = Form()):
             string = '未匹配'
         if strtobool(config['time_log']):
             print('获取图片耗时:',dowtimend-dowtime,imgdow)
-            if imgdow != '图片类型为GIF跳过':
+            if imgdow != '图像不符合':
                 print('图片过滤耗时：',ocr_guolv_end-ocr_guolv)
             print("总耗时：", time.time() - start,time.strftime('%Y-%m-%d-%Hh-%Mm-%Ss',time.localtime(time.time())))
         
@@ -91,5 +75,4 @@ result = ocr.ocr(img, cls=True)
 result = ocr2.ocr(img, cls=True)
 print("OCR初始化耗时：", time.time() - start)
 if __name__ == '__main__':
-    uvicorn.run(app, host="192.168.1.110", port=int(config['port']),access_log=strtobool(config['api_log']))
-
+    uvicorn.run(app, host="0.0.0.0", port=int(config['port']),access_log=strtobool(config['api_log']))
