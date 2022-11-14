@@ -22,7 +22,10 @@ config = json.load(open('./config.json', 'r', encoding='utf8'))
 app = FastAPI()
 if not os.path.exists('./save'):
     os.madir('./save')
-
+if not(os.path.exists('./data.json')):
+        with open('./data.json','w') as f:
+            f.write('{}')
+            f.close()
 @app.post('/OCR/') #OCR服务
 def get_item_list(url:str = Form()):
     start = time.time()
