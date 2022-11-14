@@ -36,10 +36,6 @@ def pHash(img):
     return hash
 def get_MD5Hash(path):
     path_list = os.listdir(path)
-    if not(os.path.exists(path+'../data.json')):
-        with open(path+'../data.json','w') as f:
-            f.write('{}')
-            f.close()
     with open(path+'../data.json','r') as f:
         jsonData = f.read()
         f.close()
