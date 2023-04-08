@@ -4,19 +4,14 @@ import requests
 import threading
 import json
 import time
-import get_Hash
 import random
-import os
 from multiprocessing.dummy import Pool as ThreadPool
 
 config = json.load(open('./config.json', 'r', encoding='utf8'))
 img_size_max = config['img_size_max'].split(',')
 img_size_min = config['img_size_min'].split(',')
 img_aim_long = int(config['img_aim_long'])
-img_path = './save/'
 
-
-path_list = len(os.listdir(img_path))
 path = []
 imgdata = []
 state = True
@@ -30,7 +25,7 @@ def dowm(string):
     data = requests.get(string)
     return data.content
 
-def timer1():
+def timer():
     global path
     global imgdata
     global state
@@ -46,16 +41,9 @@ def timer1():
             #     print(len(i))
             # print(time.time()-start,len(imgdata))
             state = True
-        threading.Timer(0.1, timer1).start()
-        
-def timer2():
-    global path_list
-    if path_list != len(os.listdir(img_path)):
-        get_Hash.get_MD5Hash(img_path)
-    path_list = len(os.listdir(img_path))
-    threading.Timer(4, timer2).start()
+        threading.Timer(0.1, timer).start()
     
-def img_dow(image_url,file_name,file_name_S):
+def img_dow(image_url,file_name):
     global path
     global imgdata
     global state
@@ -84,7 +72,6 @@ def img_dow(image_url,file_name,file_name_S):
         img_np_arr = np.frombuffer(data, np.uint8)
         img = cv2.imdecode(img_np_arr, cv2.IMREAD_COLOR)
         shape = img.shape
-        cv2.imwrite(file_name_S,img)
         if shape[1] < img_size_max[0] and shape[0] < img_size_max[1] and shape[0] > img_size_min[1] and shape[1] > img_size_min[0]:
             if shape[0] > img_aim_long+200 or shape[1] > img_aim_long+200:
                 if shape[0] > shape[1]:
@@ -114,5 +101,4 @@ def img_dow(image_url,file_name,file_name_S):
         else:
             return "图像不符合"
 pool = ThreadPool(6)
-timer1()
-timer2()
+timer()

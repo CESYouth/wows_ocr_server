@@ -8,7 +8,7 @@ wows-stats-bot水表插件，图片OCR_API服务器
 #### 安装教程
 
 1.  测试环境 python==3.8
-2.  git clone https://github.com/Youth_YU/wows_ocr_sever.git
+2.  git clone https://gitee.com/Youth_YU/wows_ocr_sever.git
 3.  cd wows_ocr_sever
 4.  pip install -r requirement.txt
 5.  安装paddle框架 参考:https://www.paddlepaddle.org.cn/
