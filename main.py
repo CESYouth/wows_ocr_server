@@ -117,7 +117,7 @@ def get_image():
     
     
 start = time.time()
-ocr2 = PaddleOCR(use_gpu=True,
+ocr2 = PaddleOCR(use_gpu=strtobool(config['gpu']),
                 det_model_dir='./inference/db_mv3_infer',
                 use_mp=True, total_process_num=6,show_log=False,drop_score=0.1)
 ocr = PaddleOCR(use_angle_cls=True, lang="ch", use_gpu=strtobool(config['gpu']),
