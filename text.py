@@ -135,11 +135,13 @@ def Text_Chuli(rec):
 def align_text(res):
     res.sort(key=lambda i: (i[0][0][0]))  # 按照x排
     already_IN, line_list = [], []
+    res = res[0]
     for i in range(len(res)):  # i当前
         if res[i][0][0] in already_IN:
             continue
         line_txt = res[i][1][0]
         already_IN.append(res[i][0][0])
+        # print(res[i][0][0][1])
         y_i_points = [res[i][0][0][1], res[i][0][1][1], res[i][0][3][1], res[i][0][2][1]]
         min_I_y, max_I_y = min(y_i_points), max(y_i_points)
         curr = Interval(min_I_y + (max_I_y - min_I_y) // 3, max_I_y)
@@ -160,4 +162,5 @@ def align_text(res):
         line_list.append((res[i][0][0][1], line_txt))
     line_list.sort(key=lambda x: x[0])
     txt = ' '.join([i[1] for i in line_list])
+    print(txt)
     return txt
