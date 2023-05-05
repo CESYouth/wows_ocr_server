@@ -1,5 +1,7 @@
 # 导入Flask类
-from fastapi import FastAPI,Form
+from fastapi import FastAPI,Form,status
+from fastapi.responses import JSONResponse, Response
+from typing import Union
 import image
 import traceback
 import time
@@ -15,6 +17,17 @@ import cv2
 import get_Hash
 from paddleocr import PaddleOCR
 from distutils.util import strtobool
+
+def reponse(*, code=200,data: Union[list, dict, str],message="Success") -> Response:
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            'code': code,
+            'message': message,
+            'data': data,
+        }
+    )
+
 
 path = os.getcwd()
 config = json.load(open('./config.json', 'r', encoding='utf8'))
@@ -89,7 +102,7 @@ def get_item_list(url:str = Form()):
         except:
             pass
         print(string)
-        return string
+        return reponse(data={'msg':string},code=200,message="success")
     except Exception as e:
         traceback.print_exc()
         try:
@@ -100,7 +113,7 @@ def get_item_list(url:str = Form()):
             os.remove(file_name_S)
         except:
             pass
-        return "未匹配"
+        return reponse(data={'msg':"服务器内部错误"},code=500,message="error")
 
 
 @app.post('/ImageRandom/')#获取随机表情包
