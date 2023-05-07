@@ -133,9 +133,10 @@ def Text_Chuli(rec):
     return string
 
 def align_text(res):
+    res = res[0]
     res.sort(key=lambda i: (i[0][0][0]))  # 按照x排
     already_IN, line_list = [], []
-    res = res[0]
+    
     for i in range(len(res)):  # i当前
         if res[i][0][0] in already_IN:
             continue
