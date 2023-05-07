@@ -42,7 +42,7 @@ def Text_Chuli(rec):
         if dst_path != -1 and dst_path + len(kongge[i]) < len(string) and string[dst_path + len(kongge[i])] != ' ':
             string = string[0:dst_path]+' '+string[dst_path:dst_path + len(kongge[i])] + ' ' + string[dst_path + len(kongge[i]):len(string)]
     #关键词后添加空格
-    # print(string)
+    
     list = string.split(' ')
     while "" in list:  # 判断是否有空值在列表中
         list.remove("")  # 如果有就直接通过remove删除
