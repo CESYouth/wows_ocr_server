@@ -7,7 +7,7 @@ from interval import Interval
 kongge = ['wws', 'me', 'ship.rank','rank', 'recent','切换绑定' ,'绑定', '国服', '亚服', '俄服', '美服','cn','asia','na','eu','help','ship','bind']
 server = '国服,亚服,俄服,美服,cn,asia,na,eu'
 api_url = r'https://api.wows.shinoaki.com/public/wows/encyclopedia/ship/search'
-res = requests.get(api_url)
+res = requests.get(api_url,proxies = { "http": None, "https": None})
 res_data = json.loads(res.text).get('data')
 name_list = []
 for i in range(4, len(res_data)):
