@@ -41,6 +41,7 @@ if not(os.path.exists('./data.json')):
             f.close()
 @app.post('/OCR/') #OCR服务
 def get_item_list(url:str = Form()):
+    print(url)
     start = time.time()
     file_name = path+'/image'+str(random.randint(0, 1000)) + '.jpg'
     file_name_S = path+'/image'+str(random.randint(0, 1000)) + '_S.jpg'

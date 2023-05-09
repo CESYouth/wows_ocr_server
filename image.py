@@ -27,7 +27,7 @@ for i in range(2):
     img_size_min[i] = int(img_size_min[i])
 
 def dowm(string):
-    data = requests.get(string)
+    data = requests.get(string,proxies = { "http": None, "https": None})
     return data.content
 
 def timer1():

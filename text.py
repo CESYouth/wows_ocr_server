@@ -7,7 +7,7 @@ from interval import Interval
 kongge = ['wws', 'me', 'ship.rank','rank', 'recent','切换绑定' ,'绑定', '国服', '亚服', '俄服', '美服','cn','asia','na','eu','help','ship','bind']
 server = '国服,亚服,俄服,美服,cn,asia,na,eu'
 api_url = r'https://api.wows.shinoaki.com/public/wows/encyclopedia/ship/search'
-res = requests.get(api_url)
+res = requests.get(api_url,proxies = { "http": None, "https": None})
 res_data = json.loads(res.text).get('data')
 name_list = []
 for i in range(4, len(res_data)):
@@ -133,9 +133,9 @@ def Text_Chuli(rec):
     return string
 
 def align_text(res):
+    res = res[0]
     res.sort(key=lambda i: (i[0][0][0]))  # 按照x排
     already_IN, line_list = [], []
-    res = res[0]
     for i in range(len(res)):  # i当前
         if res[i][0][0] in already_IN:
             continue
