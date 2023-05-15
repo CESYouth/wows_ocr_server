@@ -81,7 +81,7 @@ def get_item_list(url:str = Form()):
                 string = text.Text_Chuli(result)
             else:
                 string = '未匹配'
-            if 'wws ' in string and strtobool(config['save_image']):
+            if 'wws me' in string and strtobool(config['save_image']):
                 with open(file_name_S,'rb') as f:
                     md = hashlib.md5()
                     md.update(f.read())
