@@ -16,8 +16,20 @@ img_aim_long = int(config['img_aim_long'])
 img_path = './save/'
 if not os.path.exists(img_path):
     os.mkdir(img_path)
+if not os.path.exists(img_path+"recent/"):
+    os.mkdir(img_path+"recent/")
+if not os.path.exists(img_path+"ship/"):
+    os.mkdir(img_path+"ship/")
+if not os.path.exists(img_path+"sx/"):
+    os.mkdir(img_path+"sx/")
+if not os.path.exists(img_path+"sd/"):
+    os.mkdir(img_path+"sd/")
+if not os.path.exists(img_path+"other/"):
+    os.mkdir(img_path+"other/")
 
-path_list = len(os.listdir(img_path))
+path_list = 0
+for i in os.listdir(img_path):#获取图片数量
+    path_list=path_list+len(os.listdir(img_path+i))
 path = []
 imgdata = []
 state = True
@@ -51,9 +63,12 @@ def timer1():
         
 def timer2():
     global path_list
-    if path_list != len(os.listdir(img_path)):
+    temp_sum = 0
+    for i in os.listdir(img_path):  # 获取图片数量
+        temp_sum = temp_sum + len(os.listdir(img_path+i))
+    if path_list != temp_sum:
         get_Hash.get_MD5Hash(img_path)
-    path_list = len(os.listdir(img_path))
+    path_list = temp_sum
     threading.Timer(4, timer2).start()
     
 def img_dow(image_url,file_name,file_name_S):
