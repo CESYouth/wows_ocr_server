@@ -33,8 +33,7 @@ path = os.getcwd()
 config = json.load(open('./config.json', 'r', encoding='utf8'))
 # 使用当前模块的名称构建Flask app
 app = FastAPI()
-if not os.path.exists('./save'):
-    os.madir('./save')
+
 if not(os.path.exists('./data.json')):
         with open('./data.json','w') as f:
             f.write('{}')

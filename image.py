@@ -14,7 +14,8 @@ img_size_max = config['img_size_max'].split(',')
 img_size_min = config['img_size_min'].split(',')
 img_aim_long = int(config['img_aim_long'])
 img_path = './save/'
-
+if not os.path.exists(img_path):
+    os.mkdir(img_path)
 
 path_list = len(os.listdir(img_path))
 path = []
