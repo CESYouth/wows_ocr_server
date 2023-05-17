@@ -42,33 +42,35 @@ def get_MD5Hash(path):
         # print(jsonData)
     text = json.loads(jsonData)
     jishu = 0
-    for filename in path_list:
-        if os.path.splitext(filename)[1] == ".jpg":
-            try:
-                text[filename.replace('.jpg','')]
-            except Exception as e:
-                img = cv2.imread(path+filename,1)
-                # print(path+filename,type(img))
-                Hash = pHash(img)
-                # print(type(hash))
-                wirte_if = True
-                for key in text:
-                    data = text[key].replace('[','').replace(']','').replace(' ','').split(',')
-                    for i in range(len(data)):
-                        data[i] = int(data[i])
-                    # print(data)
-                    dst = cmpHash(Hash,data)
-                    if dst < 4:
-                        print('OUT_IMG',filename,key+'.jpg',dst)
-                        os.remove(path+filename)
-                        wirte_if = False
-                        break
-                if wirte_if:
-                    jishu = jishu + 1
-                    text.update({filename.replace('.jpg',''):str(Hash)})
-                    with open(path+'../data.json','w') as f:
-                        f.write(str(text).replace('\'','\"'))
-                        f.close()
+    for file_path in path_list:
+        temp_path_list = os.listdir(path+file_path)
+        for filename in temp_path_list:
+            if os.path.splitext(filename)[1] == ".jpg":
+                try:
+                    text[filename.replace('.jpg','')]
+                except Exception as e:
+                    img = cv2.imread(path+file_path+'/'+filename,1)
+                    # print(path+file_path+'/'+filename)
+                    Hash = pHash(img)
+                    # print(type(hash))
+                    wirte_if = True
+                    for key in text:
+                        data = text[key].replace('[','').replace(']','').replace(' ','').split(',')
+                        for i in range(len(data)):
+                            data[i] = int(data[i])
+                        # print(data)
+                        dst = cmpHash(Hash,data)
+                        if dst < 4:
+                            print('OUT_IMG',filename,key+'.jpg',dst)
+                            os.remove(path+filename)
+                            wirte_if = False
+                            break
+                    if wirte_if:
+                        jishu = jishu + 1
+                        text.update({filename.replace('.jpg',''):str(Hash)})
+                        with open(path+'../data.json','w') as f:
+                            f.write(str(text).replace('\'','\"'))
+                            f.close()
     print('Add_Data:',jishu,'Data_Long:',len(text))
 if __name__ == '__main__':
     get_MD5Hash('./save/')
