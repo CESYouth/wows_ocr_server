@@ -18,6 +18,8 @@ import get_Hash
 from paddleocr import PaddleOCR
 from distutils.util import strtobool
 
+img_path = './save/'
+
 def reponse(*, code=200,data: Union[list, dict, str],message="Success") -> Response:
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -85,7 +87,17 @@ def get_item_list(url:str = Form()):
                     md = hashlib.md5()
                     md.update(f.read())
                     md5 = md.hexdigest()
-                shutil.move(file_name_S,'./save/'+md5+'.jpg')
+                if "recent" in string:
+                    shutil.move(file_name_S, img_path +"recent/"+ md5 + '.jpg')
+                elif "ship" in string:
+                    shutil.move(file_name_S, img_path + "ship/" +md5 + '.jpg')
+                elif "sx" in string or "扫雪" in string:
+                    shutil.move(file_name_S, img_path + "sx/" +md5 + '.jpg')
+                elif "sd" in string or "圣诞" in string:
+                    shutil.move(file_name_S,img_path +"sd/"+md5+'.jpg')
+                else:
+                    shutil.move(file_name_S, img_path + "other/" + md5 + '.jpg')
+
         else:
             string = '未匹配'
         if strtobool(config['time_log']):
@@ -119,9 +131,14 @@ def get_item_list(url:str = Form()):
 @app.post('/ImageRandom/')#获取随机表情包
 def get_image():
     global path
-    file_list = os.listdir(path+'/save/')
-    file_long = len(file_list)
-    with open(path+'/save/'+file_list[random.randint(0, file_long-1)],'rb') as f:
+    while True:
+        temp_path = os.listdir(path+img_path)
+        temp_path = temp_path[random.randint(0,len(temp_path)-1)]
+        file_list = os.listdir(path+img_path+temp_path)
+        file_long = len(file_list)
+        if file_long !=0:
+            break
+    with open(path+img_path+temp_path+'/'+file_list[random.randint(0, file_long-1)],'rb') as f:
         image = f.read()
         f.close()
     image_base64 = str(base64.b64encode(image), encoding='utf-8')
