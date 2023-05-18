@@ -36,6 +36,7 @@ def fuzzy_matching(list,value):
     else:
         match_value = ''
     return match_value
+
 def Text_Chuli(rec):
     string = align_text(rec)
     string = string.replace(' ','')
