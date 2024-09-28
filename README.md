@@ -27,6 +27,6 @@ mackerelfish/wows-ocr-web:cpu
 3.  save_image  保存成功识别的图片，gpu  启用gpu识别，port  端口
 4.  img_size_max  最大输入图片，img_size_min 最小输入图片，img_aim_long 缩放至识别分辨率
 
-#### 本项目仅编译基于cpu运算的paddleocr，docker镜像已编译成默认值，使用时自行替换成http://<yourhost>:23338
+#### 本项目仅编译基于cpu运算的paddleocr，docker镜像已编译成默认值，使用时自行替换成http://yourhost:23338
 
 #### 如需其他版本的paddleocr（如基于NVIDIA芯片运算），请前往原作者的项目 https://github.com/CESYouth/wows_ocr_server 自行安装
