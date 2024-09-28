@@ -1,4 +1,6 @@
 FROM python:3.8
+RUN apt update
+RUN apt install libgl1-mesa-glx
 RUN pip install --upgrade pip
 WORKDIR /wows_ocr
 COPY ./ /wows_ocr
