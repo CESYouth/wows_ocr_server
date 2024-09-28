@@ -1,9 +1,9 @@
 {
-    "ocr_log":"False",
+    "ocr_log":"True",
     "api_log":"True",
     "time_log":"True",
     "save_image":"True",
-    "gpu":"True",
+    "gpu":"False",
     "port":"23338",
     "img_size_max":"2560,1440",
     "img_size_min":"100,50",
